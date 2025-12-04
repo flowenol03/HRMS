@@ -1,0 +1,125 @@
+{
+  "employees": [
+    {
+      "id": "1",
+      "username": "admin",
+      "email": "admin@hrms.com",
+      "password": "admin123",
+      "role": "admin",
+      "fullName": "System Administrator",
+      "department": "IT",
+      "designation": "Admin",
+      "joinDate": "2023-01-01",
+      "basicSalary": 80000,
+      "phone": "+1 (555) 123-4567",
+      "address": "123 Admin Street, City, State, ZIP",
+      "status": "active",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "username": "hr1",
+      "email": "hr1@hrms.com",
+      "password": "hr123",
+      "role": "hr",
+      "fullName": "HR Manager",
+      "department": "Human Resources",
+      "designation": "HR Manager",
+      "joinDate": "2023-02-01",
+      "basicSalary": 60000,
+      "phone": "+1 (555) 234-5678",
+      "address": "456 HR Street, City, State, ZIP",
+      "status": "active",
+      "createdAt": "2023-02-01T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "username": "emp1",
+      "email": "emp1@hrms.com",
+      "password": "emp123",
+      "role": "employee",
+      "fullName": "John Employee",
+      "department": "Sales",
+      "designation": "Sales Executive",
+      "joinDate": "2023-03-01",
+      "basicSalary": 40000,
+      "phone": "+1 (555) 345-6789",
+      "address": "789 Employee Street, City, State, ZIP",
+      "status": "active",
+      "createdAt": "2023-03-01T00:00:00.000Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "1",
+      "employeeId": "emp1",
+      "employeeName": "John Employee",
+      "date": "2024-01-15",
+      "checkIn": "09:00",
+      "checkOut": "17:00",
+      "status": "present",
+      "createdAt": "2024-01-15T09:00:00.000Z"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "1",
+      "employeeId": "emp1",
+      "employeeName": "John Employee",
+      "leaveType": "casual",
+      "startDate": "2024-01-20",
+      "endDate": "2024-01-22",
+      "reason": "Family function",
+      "status": "approved",
+      "totalDays": 3,
+      "createdAt": "2024-01-10T00:00:00.000Z"
+    }
+  ],
+  "payroll": [
+    {
+      "id": "1",
+      "employeeId": "emp1",
+      "employeeName": "John Employee",
+      "basicSalary": 40000,
+      "allowances": [
+        { "name": "House Rent Allowance", "amount": 8000 },
+        { "name": "Conveyance Allowance", "amount": 2000 }
+      ],
+      "deductions": [
+        { "name": "Provident Fund", "amount": 2000 }
+      ],
+      "tax": 2000,
+      "grossSalary": 50000,
+      "netSalary": 46000,
+      "payPeriodStart": "2024-01-01",
+      "payPeriodEnd": "2024-01-31",
+      "paymentDate": "2024-02-05",
+      "paymentMethod": "bank",
+      "status": "paid",
+      "createdAt": "2024-01-31T00:00:00.000Z"
+    }
+  ],
+  "performances": [
+    {
+      "id": "1",
+      "employeeId": "emp1",
+      "employeeName": "John Employee",
+      "reviewPeriod": "Q4 2023",
+      "reviewDate": "2024-01-10",
+      "reviewerId": "hr1",
+      "reviewerName": "HR Manager",
+      "ratings": {
+        "qualityOfWork": 4,
+        "productivity": 4,
+        "communication": 3,
+        "teamwork": 5,
+        "punctuality": 4,
+        "problemSolving": 4
+      },
+      "overallScore": 4,
+      "feedback": "Excellent performance this quarter. Great team player.",
+      "status": "completed",
+      "createdAt": "2024-01-10T00:00:00.000Z"
+    }
+  ]
+}
