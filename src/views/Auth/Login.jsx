@@ -1,6 +1,7 @@
+// views/Auth/Login.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthViewModel } from '../../viewmodels/AuthViewModel';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';  // Change from useAuthViewModel
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
 import Toast from '../../components/notifications/Toast';
 
@@ -12,8 +13,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const [toast, setToast] = useState(null);
   
-  const authViewModel = new AuthViewModel();
+  const { login, user } = useAuth();  // Use the auth hook
   const navigate = useNavigate();
+  
+  // If user is already logged in, redirect to dashboard
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
   
   const defaultCredentials = [
     { username: 'admin', password: 'admin123', role: 'admin' },
@@ -26,16 +32,9 @@ const Login = () => {
     setError('');
     setLoading(true);
     
-    // For demo purposes, use local authentication
-    // In production, this would use Firebase Auth
-    const user = defaultCredentials.find(
-      cred => cred.username === username && cred.password === password
-    );
+    const result = await login(username, password);
     
-    if (user) {
-      // Simulate successful login
-      localStorage.setItem('hrms_user', JSON.stringify(user));
-      
+    if (result.success) {
       setToast({
         message: 'Login successful! Redirecting...',
         type: 'success'
@@ -45,7 +44,7 @@ const Login = () => {
         navigate('/dashboard');
       }, 1500);
     } else {
-      setError('Invalid username or password');
+      setError(result.error || 'Invalid username or password');
       setToast({
         message: 'Invalid credentials',
         type: 'error'

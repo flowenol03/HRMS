@@ -4,6 +4,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { NotificationProvider } from '../context/NotificationContext';
 import { initializeDatabase } from '../firebase/firebaseService';
+import { useAuth } from '../hooks/useAuth';
 
 // Views
 import Login from '../views/Auth/Login';
@@ -17,31 +18,39 @@ import PayrollList from '../views/Payroll/PayrollList';
 import PerformanceList from '../views/Performance/PerformanceList';
 import DashboardLayout from '../layout/DashboardLayout';
 
-// Private Route Component
+// Private Route Component - Moved OUTSIDE AppRouter
 const PrivateRoute = ({ children, requiredRole = null }) => {
-  const user = JSON.parse(localStorage.getItem('hrms_user'));
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
   
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   
   if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return children;
 };
 
-// Role-based route helper
+// Role-based route helper - Moved OUTSIDE AppRouter
 const RoleRoute = ({ children, roles }) => {
-  const user = JSON.parse(localStorage.getItem('hrms_user'));
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
   
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   
   if (!roles.includes(user.role)) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return children;
@@ -52,76 +61,78 @@ initializeDatabase().catch(console.error);
 
 const AppRouter = () => {
   return (
-    <ThemeProvider>
-      <NotificationProvider>
-        <Router>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            
-            {/* Protected Routes with Layout */}
-            <Route path="/" element={
-              <PrivateRoute>
-                <DashboardLayout />
-              </PrivateRoute>
-            }>
-              <Route index element={<Navigate to="/dashboard" />} />
-              <Route path="dashboard" element={<Dashboard />} />
+    <AuthProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
               
-              {/* Employee Management */}
-              <Route path="employees" element={
-                <RoleRoute roles={['admin', 'hr']}>
-                  <EmployeeList />
-                </RoleRoute>
-              } />
+              {/* Protected Routes with Layout */}
+              <Route path="/" element={
+                <PrivateRoute>
+                  <DashboardLayout />
+                </PrivateRoute>
+              }>
+                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                
+                {/* Employee Management */}
+                <Route path="employees" element={
+                  <RoleRoute roles={['admin', 'hr']}>
+                    <EmployeeList />
+                  </RoleRoute>
+                } />
+                
+                {/* Attendance */}
+                <Route path="attendance" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <AttendanceList />
+                  </RoleRoute>
+                } />
+                
+                <Route path="check-in-out" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <CheckInCheckOut />
+                  </RoleRoute>
+                } />
+                
+                {/* Leave Management */}
+                <Route path="leave" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <LeaveRequests />
+                  </RoleRoute>
+                } />
+                
+                <Route path="apply-leave" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <ApplyLeave />
+                  </RoleRoute>
+                } />
+                
+                {/* Payroll */}
+                <Route path="payroll" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <PayrollList />
+                  </RoleRoute>
+                } />
+                
+                {/* Performance */}
+                <Route path="performance" element={
+                  <RoleRoute roles={['admin', 'hr', 'employee']}>
+                    <PerformanceList />
+                  </RoleRoute>
+                } />
+              </Route>
               
-              {/* Attendance */}
-              <Route path="attendance" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <AttendanceList />
-                </RoleRoute>
-              } />
-              
-              <Route path="check-in-out" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <CheckInCheckOut />
-                </RoleRoute>
-              } />
-              
-              {/* Leave Management */}
-              <Route path="leave" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <LeaveRequests />
-                </RoleRoute>
-              } />
-              
-              <Route path="apply-leave" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <ApplyLeave />
-                </RoleRoute>
-              } />
-              
-              {/* Payroll */}
-              <Route path="payroll" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <PayrollList />
-                </RoleRoute>
-              } />
-              
-              {/* Performance */}
-              <Route path="performance" element={
-                <RoleRoute roles={['admin', 'hr', 'employee']}>
-                  <PerformanceList />
-                </RoleRoute>
-              } />
-            </Route>
-            
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </Router>
-      </NotificationProvider>
-    </ThemeProvider>
+              {/* Catch all route */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 };
 

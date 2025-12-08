@@ -1,7 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const ThemeContext = createContext(null);
+// Create the context
+export const ThemeContext = createContext(null);
 
+// Custom hook for using theme context
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {

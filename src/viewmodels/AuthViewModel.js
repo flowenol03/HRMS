@@ -1,20 +1,17 @@
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
-import { UserModel } from '../models/UserModel';
 
-export class AuthViewModel {
-  constructor() {
-    this.auth = useAuth();
-    this.notifications = useNotifications();
-  }
+export const useAuthViewModel = () => {
+  const auth = useAuth();
+  const notifications = useNotifications();
   
-  async login(username, password) {
+  const login = async (username, password) => {
     try {
-      const result = await this.auth.login(username, password);
+      const result = await auth.login(username, password);
       
       if (result.success) {
         // Add notification
-        this.notifications.addNotification({
+        notifications.addNotification({
           type: 'success',
           title: 'Login Successful',
           message: `Welcome back, ${username}!`,
@@ -28,13 +25,13 @@ export class AuthViewModel {
     } catch (error) {
       return { success: false, error: error.message };
     }
-  }
+  };
   
-  async logout() {
+  const logout = async () => {
     try {
-      await this.auth.logout();
+      await auth.logout();
       
-      this.notifications.addNotification({
+      notifications.addNotification({
         type: 'info',
         title: 'Logged Out',
         message: 'You have been successfully logged out.',
@@ -45,29 +42,29 @@ export class AuthViewModel {
     } catch (error) {
       return { success: false, error: error.message };
     }
-  }
+  };
   
-  getCurrentUser() {
-    return this.auth.user;
-  }
+  const getCurrentUser = () => {
+    return auth.user;
+  };
   
-  getUserRole() {
-    return this.auth.user?.role || null;
-  }
+  const getUserRole = () => {
+    return auth.user?.role || null;
+  };
   
-  isAuthenticated() {
-    return this.auth.isAuthenticated;
-  }
+  const isAuthenticated = () => {
+    return auth.isAuthenticated;
+  };
   
-  hasPermission(requiredRole) {
-    const userRole = this.getUserRole();
+  const hasPermission = (requiredRole) => {
+    const userRole = getUserRole();
     const roleHierarchy = { admin: 3, hr: 2, employee: 1 };
     
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
-  }
+  };
   
-  canAccess(module, action) {
-    const role = this.getUserRole();
+  const canAccess = (module, action) => {
+    const role = getUserRole();
     
     const permissions = {
       admin: {
@@ -97,5 +94,15 @@ export class AuthViewModel {
     };
     
     return permissions[role]?.[module]?.includes(action) || false;
-  }
-}
+  };
+  
+  return {
+    login,
+    logout,
+    getCurrentUser,
+    getUserRole,
+    isAuthenticated,
+    hasPermission,
+    canAccess
+  };
+};

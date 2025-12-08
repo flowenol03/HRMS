@@ -12,6 +12,7 @@ import {
   onValue
 } from 'firebase/database';
 import { 
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged 
@@ -20,8 +21,34 @@ import {
 // User Management
 export const authService = {
   login: async (username, password) => {
-    const email = `${username}@hrms.com`;
-    return await signInWithEmailAndPassword(auth, email, password);
+    try {
+      // First, check if user exists in Realtime Database
+      const user = await dbService.query('users', 'username', username);
+      
+      if (user.length === 0) {
+        throw new Error('User not found');
+      }
+      
+      const userData = user[0];
+      const email = userData.email; // Use email from database
+      
+      // Try to login with Firebase Auth
+      try {
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        return result;
+      } catch (authError) {
+        // If auth error (user might not exist in Firebase Auth), create it
+        if (authError.code === 'auth/user-not-found') {
+          // Create user in Firebase Auth
+          const authUser = await createUserWithEmailAndPassword(auth, email, password);
+          return authUser;
+        }
+        throw authError;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   },
   
   logout: async () => {
@@ -37,7 +64,7 @@ export const authService = {
   }
 };
 
-// Database CRUD Operations
+// Database CRUD Operations (keep as is)
 export const dbService = {
   // Create
   create: (path, data) => {

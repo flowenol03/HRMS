@@ -1,8 +1,10 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import { dbService } from '../firebase/firebaseService';
 
-const NotificationContext = createContext(null);
+// Create the context
+export const NotificationContext = createContext(null);
 
+// Custom hook for using notification context
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context) {
